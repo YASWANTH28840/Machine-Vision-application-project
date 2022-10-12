@@ -1,0 +1,179 @@
+<html>
+
+<head>
+    <title>Python Flask Upload and display image</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <style>
+        .intro {
+            background: #7337b8;
+            width: 100vw !important;
+            color: white;
+        }
+        
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        
+        h1 {
+            font-family: 'Oswald', sans-serif !important;
+        }
+        
+        .images {
+            color: #7337b8;
+            font-family: 'Oswald', sans-serif !important;
+        }
+        
+        .btn,
+        .btn-primary {
+            background-color: white !important;
+            color: #7337b8;
+            border: none !important;
+        }
+        
+        .btn:hover {
+            background-color: black !important;
+            border: 0px transparent !important;
+        }
+        
+        .form-control {
+            border: none !important;
+        }
+        
+        .btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        .form-control:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid m-0 p-0">
+        <center>
+            <section class="intro m-0 p-4">
+                <h1 align="center">Parallel Image Segmentation Pipeline</h1>
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <p>
+                            {% with messages = get_flashed_messages() %} {% if messages %}
+                            <ul>
+                                {% for message in messages %}
+                                <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %} {% endwith %}
+                        </p>
+                        <form method="post" action="/" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Image</label>
+                                <input type="file" name="file" class="form-control" autocomplete="off" required>
+                                <div id="emailHelp" class="form-text">Enter the image you need the processing for</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        {% if enable %}
+                            <form method="get" enctype="multipart/form-data" name = "process" class = "process" action="/process">
+                                <input type = "submit" value="Process">
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </center>
+        <section class="images p-3">
+            <div class="row justify-content-center text-center">
+                <div class="col-3">
+                    <h3>Gaussian Blur</h3>
+                    {% if gbs %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=gbs[0])}}">
+                            <figcaption>Serial Gaussian Blur (RunTime = "{{gbs[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    <br> {% endif %} {% if gbs %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=gbp[0])}}">
+                            <figcaption>Parallel Gaussian Blur (RunTime = "{{gbp[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-3">
+                    <h3>OTSU Thresholding</h3>
+                    {% if otsus %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=otsus[0])}}">
+                            <figcaption>Serial OTSU (RunTime = "{{otsus[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    <br> {% endif %} 
+                    {% if otsup %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=otsup[0])}}">
+                            <figcaption>Parallel OTSU (RunTime = "{{otsup[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-3">
+                    <h3>Sobel Edge Detection</h3>
+                    {% if seds %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=seds[0])}}">
+                            <figcaption>Serial Sobel Edge Detection (RunTime = "{{seds[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    <br> {% endif %} {% if sedp %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=sedp[0])}}">
+                            <figcaption>Parallel Sobel Edge Detection (RunTime = "{{sedp[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-3">
+                    <h3>Houghman Transform</h3>
+                    {% if seds %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=seds[0])}}">
+                            <figcaption>Serial Sobel Edge Detection (RunTime = "{{seds[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    <br> {% endif %} {% if sedp %}
+                    <div>
+                        <figure>
+                            <img height=250 width=auto src="{{ url_for('display_image', filename=sedp[0])}}">
+                            <figcaption>Parallel Sobel Edge Detection (RunTime = "{{sedp[1]}}")</figcaption>
+                        </figure>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</html>
